@@ -1,0 +1,30 @@
+from flask import Flask, render_template, request
+import joblib
+import numpy as np
+import pickle
+
+# Load the trained model
+with open('DecisionTree.pkl', 'rb') as file:
+    model = pickle.load(file)
+    
+
+apps = Flask(_name_)
+
+@apps.route('/')
+def home():
+    return render_template('indexs.html')
+
+@apps.route('/predict', methods=['POST'])
+def predict():
+    data = request.form.to_dict()
+    input_data = [float(data['Temprature']),
+                  float(data['Humidity']),
+                  float(data['pH Value']),
+                  float(data['Rain Fall']),]
+    
+    input_data = np.array(input_data).reshape(1, -1)
+    prediction = model.predict(input_data)[0]
+    return render_template('indexs.html', prediction=prediction)
+
+if _name_ == '_main_':
+    apps.run(debug=True)
